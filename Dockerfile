@@ -8,5 +8,6 @@ COPY requirements.txt ./
 
 RUN pip install -r requirements.txt
 
+docker buildx build --platform linux/amd64
 
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 -timeout 0 main:app
