@@ -8,12 +8,14 @@ app = Flask(__name__)
 @app.route("/start_scrape", methods=["POST"])
 def scrape():
     data = request.get_json()  # Extract JSON data from the request
-    if data:
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
-        city = data.get('city')
-        print("Received data: ", data)
-        # Now you can use start_time, end_time, and city in your application logic
-        return jsonify({"message": "Data received successfully."}), 200
-    else:
-        return jsonify({"error": "No JSON data received."}), 400
+    message_data_base64 = data.get('message', {}).get('data', '')  # Extract base64 encoded message data
+        if message_data_base64:
+            message_data_json = base64.b64decode(message_data_base64).decode('utf-8')  # Decode base64 and parse JSON
+            message_data = json.loads(message_data_json)
+            start_time = message_data.get('start_time')
+            end_time = message_data.get('end_time')
+            city = message_data.get('city')
+            print("Received data: start_time={}, end_time={}, city={}".format(start_time, end_time, city))
+            # Now you can use start_time, end_time, and city in your application logic
+            return jsonify({"message": "Data received successfully."}), 200
+    return jsonify({"error": "Invalid request."}), 400
