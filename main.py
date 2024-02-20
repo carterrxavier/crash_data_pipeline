@@ -1,7 +1,7 @@
 import base64
 from flask import Flask, request, jsonify
 import json
-from src.aquire import scrape_data
+from src.aquire import check_city_support ,scrape_data
 
 app = Flask(__name__)
 
@@ -17,6 +17,9 @@ def scrape():
             end_time = message_data.get('end_time')
             city = message_data.get('city')
             print("Received data: start_time={}, end_time={}, city={}".format(start_time, end_time, city))
+            lat_long = check_city_support(city)
+            if lat_long:
+                  scrape_data(start_time,end_time, city)
             # Now you can use start_time, end_time, and city in your application logic
             return jsonify({"message": "Data received successfully."}), 200
     return jsonify({"error": "Invalid request."}), 400
