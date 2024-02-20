@@ -10,6 +10,10 @@ import os
 
 
 options = webdriver.ChromeOptions()
+options = webdriver.ChromeOptions()
+dir_path = os.path.dirname(os.path.realpath('chromedriver'))
+chromedriver = dir_path + '/chromedriver'
+os.environ['webdriver.chrome.driver'] = chromedriver
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')
 pattern = r"https://app\.myaccident\.org/accident/\d+$"
@@ -52,6 +56,7 @@ def check_city_support(city):
 def scrape_data(start_date, end_date, city):  
 
         url = 'https://app.myaccident.org/results?startDate=2024-02-01&endDate=2024-02-18&lat=32.7767&lng=-96.7970&radius=20000'
+
 
         driver = webdriver.Chrome(options=options)     
         driver.get(url)
