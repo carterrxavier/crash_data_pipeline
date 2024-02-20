@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 import selenium.webdriver.support.ui as ui
 import selenium.webdriver.support.expected_conditions as EC
 import os
-print(selenium.__version__)
+
 
 options = webdriver.ChromeOptions()
 dir_path = os.path.dirname(os.path.realpath('chromedriver'))
@@ -16,10 +16,8 @@ os.environ['webdriver.chrome.driver'] = chromedriver
 pattern = r"https://app\.myaccident\.org/accident/\d+$"
 
 
-def scrape_data(start_date, end_date, city):
-
-
-
+def scrape_data(start_date, end_date, city):  
+        
         url = 'https://app.myaccident.org/results?startDate=2024-02-01&endDate=2024-02-18&lat=29.432050423986603&lng=-98.48402088539248&radius=20000'
 
         driver = webdriver.Chrome(options=options)     
