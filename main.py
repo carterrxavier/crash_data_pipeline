@@ -1,3 +1,4 @@
+import base64
 from flask import Flask, request, jsonify
 import json
 from src.aquire import scrape_data
