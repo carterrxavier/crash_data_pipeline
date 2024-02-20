@@ -9,7 +9,7 @@ app = Flask(__name__)
 def scrape():
     data = request.get_json()  # Extract JSON data from the request
     message_data_base64 = data.get('message', {}).get('data', '')  # Extract base64 encoded message data
-        if message_data_base64:
+    if message_data_base64:
             message_data_json = base64.b64decode(message_data_base64).decode('utf-8')  # Decode base64 and parse JSON
             message_data = json.loads(message_data_json)
             start_time = message_data.get('start_time')
