@@ -8,5 +8,6 @@ app = Flask(__name__)
 @app.route("/start_scrape", methods=["POST"])
 def scrape():
     data = json(request.data.decode('utf-8'))
+    print("I SEE YOU")
     print(data)
     return 'success',200
