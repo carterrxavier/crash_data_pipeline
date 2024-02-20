@@ -10,8 +10,8 @@ import os
 
 
 options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--disable-gpu')
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
 pattern = r"https://app\.myaccident\.org/accident/\d+$"
 
 
