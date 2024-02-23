@@ -23,3 +23,6 @@ def scrape():
             # Now you can use start_time, end_time, and city in your application logic
             return jsonify({"message": "Data received successfully."}), 200
     return jsonify({"error": "Invalid request."}), 400
+
+if __name__ == '__main__':
+      app.run(debug=True)
