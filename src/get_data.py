@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 
-def get_accident_summary(driver): 
+def get_accident_data(driver): 
     #Unique Identifier for the accident
     uids = driver.find_elements(By.ID,'accident-top')
     case_id = ''
@@ -12,7 +12,6 @@ def get_accident_summary(driver):
                 case_id = id.split(':')[1]
             elif 'Crash ID' in id:
                 crash_id = id.split(':')[1]
-           
 
     #Location of accident
     location = driver.find_elements(By.ID,'accident-header')
@@ -26,6 +25,8 @@ def get_accident_summary(driver):
         police_dept = location_data[5]
 
     #Look into google map picture to find the lat and long of the crash
+    crash_lat = None
+    crash_long = None
     pictures = driver.find_elements(By.TAG_NAME, 'img')
     for pic in pictures:
         if 'https://maps.googleapis.com' in pic.get_attribute('src'):
@@ -77,24 +78,108 @@ def get_accident_summary(driver):
         summary_2.insert(summary_2.index('Weather') + 1, None)
 
     accident_description = summary_2[summary_2.index('Description') + 1]
-    accident_traffic_condititions = summary_2[summary_2.index('Road & Traffic Conditions') + 1]
+    accident_traffic_conditions = summary_2[summary_2.index('Road & Traffic Conditions') + 1]
     accident_weather =  summary_2[summary_2.index('Weather') + 1]
 
     
-    return  case_id,\
-            crash_id,\
-            city,\
-            date,\
-            police_dept,\
-            crash_lat,\
-            crash_long,\
-            accident_factors,\
-            accident_date_time,\
-            accident_speed_limit,\
-            accident_number_of_injuries,\
-            accident_number_of_vehicles,\
-            accident_number_of_occupants,\
-            accident_location,\
-            accident_description,\
-            accident_traffic_condititions,\
-            accident_weather
+    dictionary = {
+            "case_id": case_id,
+            "crash_id": crash_id,
+            "city": city,
+            "date": date,
+            "police_dept": police_dept,
+            "crash_lat": crash_lat,
+            "crash_long": crash_long,
+            "accident_factors": accident_factors,
+            "accident_date_time": accident_date_time,
+            "accident_speed_limit": accident_speed_limit,
+            "accident_number_of_injuries": accident_number_of_injuries,
+            "accident_number_of_vehicles": accident_number_of_vehicles,
+            "accident_number_of_occupants": accident_number_of_occupants,
+            "accident_location": accident_location,
+            "accident_description": accident_description,
+            "accident_traffic_conditions": accident_traffic_conditions,
+            "accident_weather": accident_weather
+            }
+    return dictionary , crash_id
+
+def get_vehicle_data(driver, crash_id, list_of_vehicles):
+    vehicles = driver.find_elements(By.CLASS_NAME,'driver-vehicle')
+    vehicle_number = 1
+    veh_pic = []
+    for vehicle in vehicles:
+        vehicle_type = vehicle.find_elements(By.CLASS_NAME, 'vehicle-holder')
+        for veh_type in vehicle_type:
+                elements = veh_type.find_elements(By.CLASS_NAME, 'schema')
+        for e in elements:
+                veh_pic.append(e.get_attribute('src'))
+    print(veh_pic)
+
+    for vehicle in vehicles:
+        if len(vehicle.find_elements(By.CLASS_NAME,'at-fault')) ==0:
+            at_fault = 0
+        else:
+            at_fault = 1
+        veh = vehicle.text.split('\n')
+        if veh[0] == 'Driver Info Vehicle Info':
+            veh.insert(veh.index('Driver Info Vehicle Info') - 1, None)
+        if veh[veh.index('Damage Area') + 1] == 'Driver License Type':
+            veh.insert(veh.index('Damage Area') + 1, None)
+
+    
+        if 'VIN' not in veh and veh[veh.index('Driver License Type') + 1] == 'Vehicle License State ID':
+            veh.insert(veh.index('Driver License Type') + 1, 'VIN')
+            veh.insert(veh.index('Driver License Type') + 2, 'NOVIN')
+            
+        elif 'VIN' not in veh and veh[veh.index('Driver License Type') + 1] != 'Vehicle License State ID':
+            veh.insert(veh.index('Driver License Type') + 2, 'VIN')
+            veh.insert(veh.index('Driver License Type') + 3, 'NOVIN')
+
+
+        if veh[veh.index('Driver License Type') + 1] == 'Vehicle License State ID':
+            veh.insert(veh.index('Driver License Type') + 1, None)
+        if veh[veh.index('Vehicle License State ID') + 1] == 'VIN':
+            veh.insert(veh.index('Vehicle License State ID') + 1, None)
+        if veh[veh.index('Driver License Type') + 1] == 'VIN':
+            veh.insert(veh.index('Driver License Type') + 1, None)
+        if veh[veh.index('VIN') + 1] == 'Insured':
+            veh.insert(veh.index('VIN') + 1, "NOVIN")
+        if veh[veh.index('Insured') + 1] == 'Towing Company':
+            veh.insert(veh.index('Insured') + 1, None)
+        if veh[-1] == 'Towing Company':
+            veh.insert(veh.index('Towing Company') + 1, None)
+        if veh[-1] == 'Insured':
+            veh.insert(veh.index('Insured') + 1, None)
+
+
+        vehicle_description = veh[veh.index('Driver Info Vehicle Info') - 1]
+        damage_area = veh[veh.index('Damage Area') + 1]
+        driver_license_type = veh[veh.index('Driver License Type') + 1]
+        vehicle_driver_license_state = veh[veh.index('Vehicle License State ID') + 1]
+        vin_number = veh[veh.index('VIN') + 1]
+        insured = veh[veh.index('Insured') + 1]
+        towing_company = veh[-1]
+        
+
+        
+                
+
+        dictionary = {
+            'crash_id': crash_id,
+            'vehicle_id': f'{crash_id}{vin_number}{vehicle_number}',
+            'vehicle_description': vehicle_description,
+            'vehicle_number': vehicle_number,
+            'damage_area': damage_area,
+            'driver_license_type':driver_license_type,
+            'vehicle_driver_license_state':vehicle_driver_license_state,
+            'vehicle_src': veh_pic[vehicle_number - 1],
+            'vin_number':vin_number,
+            'insured':insured,
+            'towing_comnpany':towing_company,
+            'at_fault': at_fault
+        }
+
+        list_of_vehicles.append(dictionary)
+
+        vehicle_number += 1
+    return list_of_vehicles  

@@ -44,8 +44,17 @@ def scrape_data(start_date, end_date, city,state):
 
                 return list(set(links))
 
-links = scrape_data('2024-02-14', '2024-02-18', 'los angelas', 'california')
+links = scrape_data('2024-02-15', '2024-02-23', 'austin', 'texas')
 
-for i in range(3):
-        get_page_data(links[i])
+list_of_accidents = []
+list_of_occupants = []
+list_of_vehicles = []
+
+for i in range(2):
+        try:
+                accident_data, vehicle_data, occupant_data = get_page_data(links[i], list_of_vehicles, list_of_occupants)
+        except:
+                continue
+
+print(vehicle_data)
      
