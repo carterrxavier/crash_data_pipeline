@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 import os
 from src.store_to_gcs import stitch_data, store_to_bigquery
 from dotenv import load_dotenv
-
 load_dotenv()
 
 app = Flask(__name__)

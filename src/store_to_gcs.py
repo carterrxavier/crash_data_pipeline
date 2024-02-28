@@ -8,6 +8,7 @@ load_dotenv()
 
 project_id = os.environ.get('PROJECT_ID')
 bucket_name = os.environ.get('BUCKET_NAME')
+dataset_id = os.environ.get("DATASET_ID")
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
@@ -36,8 +37,6 @@ def stitch_data(file_type, file_name, file_stitch):
 def store_to_bigquery(json_data,table):
 
     # Replace these variables with your actual values
-    project_id = "crash-data-414901"
-    dataset_id = "accident_data"
     table_id = table
 
     # Initialize a client
