@@ -9,6 +9,13 @@ import selenium.webdriver.support.expected_conditions as EC
 import os
 from aquire2 import get_page_data
 from cities import check_city_support
+from store_to_gcs import store_to_cloud
+
+
+city = 'san antonio'
+state = 'texas'
+start_date = '2024-02-01'
+end_date = '2024-02-05'
 
 
 options = webdriver.ChromeOptions()
@@ -26,7 +33,7 @@ def scrape_data(start_date, end_date, city,state):
 
         if lat_long != None:
                 url = f'https://app.myaccident.org/results?startDate={start_date}&endDate={end_date}&lat={lat_long[0]}&lng={lat_long[1]}&radius=20000'
-
+                print(url)
                 driver = webdriver.Chrome(options=options)     
                 driver.get(url)
 
@@ -44,17 +51,20 @@ def scrape_data(start_date, end_date, city,state):
 
                 return list(set(links))
 
-links = scrape_data('2024-02-15', '2024-02-23', 'austin', 'texas')
+
+links = scrape_data(start_date, end_date, city, state)
 
 list_of_accidents = []
 list_of_occupants = []
 list_of_vehicles = []
 
-for i in range(2):
+for i in range(15):
         try:
                 accident_data, vehicle_data, occupant_data = get_page_data(links[i], list_of_vehicles, list_of_occupants)
+                list_of_accidents.append(accident_data)
         except:
                 continue
 
-print(vehicle_data)
-     
+store_to_cloud('accidents', list_of_accidents, state, city,start_date, end_date)
+store_to_cloud('vehicles', list_of_vehicles, state, city,start_date, end_date)
+store_to_cloud('occupants', list_of_occupants, state, city,start_date, end_date)

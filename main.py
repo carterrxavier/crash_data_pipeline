@@ -1,28 +1,44 @@
 import base64
 from flask import Flask, request, jsonify
 import json
-from src.aquire import check_city_support ,scrape_data
+from google.cloud import storage
+from datetime import datetime, timedelta, timezone
+import os
+from src.store_to_gcs import stitch_data, store_to_bigquery
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-#trigger daily, will take a request that will allow for a start date, an end date, and a city (only if the city is supported)
-@app.route("/start_scrape", methods=["POST"])
-def scrape():
-    data = request.get_json()  # Extract JSON data from the request
-    message_data_base64 = data.get('message', {}).get('data', '')  # Extract base64 encoded message data
-    if message_data_base64:
-            message_data_json = base64.b64decode(message_data_base64).decode('utf-8')  # Decode base64 and parse JSON
-            message_data = json.loads(message_data_json)
-            start_time = message_data.get('start_time')
-            end_time = message_data.get('end_time')
-            city = message_data.get('city')
-            print("Received data: start_time={}, end_time={}, city={}".format(start_time, end_time, city))
-            lat_long = check_city_support(city)
-            if lat_long:
-                  scrape_data(start_time,end_time, city)
-            # Now you can use start_time, end_time, and city in your application logic
-            return jsonify({"message": "Data received successfully."}), 200
-    return jsonify({"error": "Invalid request."}), 400
 
-if __name__ == '__main__':
-      app.run(debug=True)
+project_id = os.environ.get('PROJECT_ID')
+bucket_name = os.environ.get('BUCKET_NAME')
+
+
+#trigger daily, will check to see if there were any files 
+#created in the GCS bucket in the last 24 hours
+#if they exist, stitch the json files together and store to BQ
+@app.route("/", methods=["POST"])
+def store_to_bq():
+      client = storage.Client(project=project_id)
+      bucket = client.get_bucket(bucket_name)
+
+      accident_data = []
+      vehicle_data = []
+      occupant_data = []
+      time_threshold = (datetime.today() - timedelta(hours=24)).replace(tzinfo=timezone.utc)
+      blobs = bucket.list_blobs()
+      recent_files = [blob.name for blob in blobs if blob.time_created >= time_threshold]
+
+      for file in recent_files:
+            stitch_data('accidents', file, accident_data)
+            stitch_data('vehicles', file, vehicle_data)
+            stitch_data('occupants', file, occupant_data)
+
+      store_to_bigquery(accident_data,'accidents')
+      store_to_bigquery(vehicle_data,'vehicles')
+      store_to_bigquery(occupant_data,'occupants')
+      
+      return "success",200
+store_to_bq()

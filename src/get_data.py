@@ -81,7 +81,6 @@ def get_accident_data(driver):
     accident_traffic_conditions = summary_2[summary_2.index('Road & Traffic Conditions') + 1]
     accident_weather =  summary_2[summary_2.index('Weather') + 1]
 
-    
     dictionary = {
             "case_id": case_id,
             "crash_id": crash_id,
@@ -107,13 +106,13 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
     vehicles = driver.find_elements(By.CLASS_NAME,'driver-vehicle')
     vehicle_number = 1
     veh_pic = []
+    vehicle_ids = []
     for vehicle in vehicles:
         vehicle_type = vehicle.find_elements(By.CLASS_NAME, 'vehicle-holder')
         for veh_type in vehicle_type:
                 elements = veh_type.find_elements(By.CLASS_NAME, 'schema')
         for e in elements:
                 veh_pic.append(e.get_attribute('src'))
-    print(veh_pic)
 
     for vehicle in vehicles:
         if len(vehicle.find_elements(By.CLASS_NAME,'at-fault')) ==0:
@@ -121,12 +120,12 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
         else:
             at_fault = 1
         veh = vehicle.text.split('\n')
+        print(veh)
         if veh[0] == 'Driver Info Vehicle Info':
             veh.insert(veh.index('Driver Info Vehicle Info') - 1, None)
         if veh[veh.index('Damage Area') + 1] == 'Driver License Type':
             veh.insert(veh.index('Damage Area') + 1, None)
 
-    
         if 'VIN' not in veh and veh[veh.index('Driver License Type') + 1] == 'Vehicle License State ID':
             veh.insert(veh.index('Driver License Type') + 1, 'VIN')
             veh.insert(veh.index('Driver License Type') + 2, 'NOVIN')
@@ -134,7 +133,6 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
         elif 'VIN' not in veh and veh[veh.index('Driver License Type') + 1] != 'Vehicle License State ID':
             veh.insert(veh.index('Driver License Type') + 2, 'VIN')
             veh.insert(veh.index('Driver License Type') + 3, 'NOVIN')
-
 
         if veh[veh.index('Driver License Type') + 1] == 'Vehicle License State ID':
             veh.insert(veh.index('Driver License Type') + 1, None)
@@ -151,8 +149,7 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
         if veh[-1] == 'Insured':
             veh.insert(veh.index('Insured') + 1, None)
 
-
-        vehicle_description = veh[veh.index('Driver Info Vehicle Info') - 1]
+        
         damage_area = veh[veh.index('Damage Area') + 1]
         driver_license_type = veh[veh.index('Driver License Type') + 1]
         vehicle_driver_license_state = veh[veh.index('Vehicle License State ID') + 1]
@@ -160,14 +157,9 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
         insured = veh[veh.index('Insured') + 1]
         towing_company = veh[-1]
         
-
-        
-                
-
         dictionary = {
             'crash_id': crash_id,
             'vehicle_id': f'{crash_id}{vin_number}{vehicle_number}',
-            'vehicle_description': vehicle_description,
             'vehicle_number': vehicle_number,
             'damage_area': damage_area,
             'driver_license_type':driver_license_type,
@@ -178,8 +170,53 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
             'towing_comnpany':towing_company,
             'at_fault': at_fault
         }
-
         list_of_vehicles.append(dictionary)
+        vehicle_ids.append(f'{crash_id}{vin_number}{vehicle_number}')
 
         vehicle_number += 1
-    return list_of_vehicles  
+    
+    return vehicle_ids
+
+def get_occupant_data(driver, crash_id, vehicle_ids, list_of_occupants):
+    occupant_body = driver.find_elements(By.CLASS_NAME,'occupant-form-holder')
+    for occupant in occupant_body:
+        occ = occupant.find_elements(By.CLASS_NAME,'occupant')
+        index = 0
+        for o in occ:
+            persons = o.find_elements(By.TAG_NAME, 'tr')
+            for p in persons:
+                if 'Occupant Safety Belt Air Bags Description' not in p.text.split('\n'):
+                    person = p.text.split('\n')
+                    occupant_number = person[0]
+                    parse_demo_info = person[1].split(',')
+                    if 'DRIVER' in person[1].upper():
+                          occupant_is_driver = 1
+                    else:
+                          occupant_is_driver = 0
+                    if 'years old' in parse_demo_info[0].split(':')[1]:
+                        occupant_age = parse_demo_info[0].split(':')[1]
+                        occupant_gender = parse_demo_info[1]
+                    else:
+                        occupant_age = None
+                        occupant_gender = parse_demo_info[0].split(':')[1]
+                    occupant_injury = parse_demo_info[-1]
+                    occupant_seatbelt = person[2]
+                    occupant_airbag = person[-1]
+                    
+                    dictionary = {
+                        'crash_id':crash_id,
+                        'vehicle_id':vehicle_ids[index],
+                        'occupant_id':f'{vehicle_ids[index]}{occupant_number}',
+                        'occupant_number': occupant_number,
+                        'occupant_is_driver': occupant_is_driver,
+                        'occupant_age': occupant_age,
+                        'occupant_gender': occupant_gender,
+                        'occupant_injury': occupant_injury,
+                        'occupant_seatbelt': occupant_seatbelt,
+                        'occupant_airbag': occupant_airbag
+                    }
+                    list_of_occupants.append(dictionary)
+            index+=1
+
+
+
