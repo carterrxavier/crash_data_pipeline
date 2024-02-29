@@ -58,7 +58,7 @@ list_of_accidents = []
 list_of_occupants = []
 list_of_vehicles = []
 
-for i in range(15):
+for i in range(50):
         try:
                 accident_data, vehicle_data, occupant_data = get_page_data(links[i], list_of_vehicles, list_of_occupants)
                 list_of_accidents.append(accident_data)

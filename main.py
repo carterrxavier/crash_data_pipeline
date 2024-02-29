@@ -1,6 +1,4 @@
-import base64
 from flask import Flask, request, jsonify
-import json
 from google.cloud import storage
 from datetime import datetime, timedelta, timezone
 import os
