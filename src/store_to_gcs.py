@@ -10,7 +10,7 @@ project_id = os.environ.get('PROJECT_ID')
 bucket_name = os.environ.get('BUCKET_NAME')
 dataset_id = os.environ.get("DATASET_ID")
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 client = storage.Client(project=project_id)
 bucket = client.get_bucket(bucket_name)
