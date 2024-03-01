@@ -3,6 +3,8 @@ from google.cloud import storage
 from datetime import datetime, timedelta, timezone
 import os
 from src.store_to_gcs import stitch_data, store_to_bigquery
+from src.last_run import get_last_message_timestamp
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -11,7 +13,7 @@ app = Flask(__name__)
 
 project_id = os.environ.get('PROJECT_ID')
 bucket_name = os.environ.get('BUCKET_NAME')
-
+subscription_name = os.environ.get("PUB_SUB_NAME")
 
 #trigger daily, will check to see if there were any files 
 #created in the GCS bucket in the last 24 hours
@@ -24,7 +26,7 @@ def store_to_bq():
       accident_data = []
       vehicle_data = []
       occupant_data = []
-      time_threshold = (datetime.today() - timedelta(hours=24)).replace(tzinfo=timezone.utc)
+      time_threshold =  (datetime.today() - timedelta(hours=24)).replace(tzinfo=timezone.utc)
       blobs = bucket.list_blobs()
       recent_files = [blob.name for blob in blobs if blob.time_created >= time_threshold]
 

@@ -1,4 +1,15 @@
 from selenium.webdriver.common.by import By
+import requests, json
+
+def get_vin_data(driverVIN):
+    if driverVIN != "NOVIN":
+        vin_url = 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/'
+        post_fields = {'format': 'json', 'data': driverVIN}
+        r = requests.post(vin_url, data=post_fields)
+        VehicleType = r.json()['Results'][0]['VehicleType']
+        return  r.json()['Results'][0]
+    else:
+        return {}
 
 def get_accident_data(driver): 
     #Unique Identifier for the accident
@@ -120,7 +131,6 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
         else:
             at_fault = 1
         veh = vehicle.text.split('\n')
-        print(veh)
         if veh[0] == 'Driver Info Vehicle Info':
             veh.insert(veh.index('Driver Info Vehicle Info') - 1, None)
         if veh[veh.index('Damage Area') + 1] == 'Driver License Type':
@@ -134,6 +144,16 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
             veh.insert(veh.index('Driver License Type') + 2, 'VIN')
             veh.insert(veh.index('Driver License Type') + 3, 'NOVIN')
 
+        if veh[veh.index('Age') + 1] == 'Gender':
+            veh.insert(veh.index('Age') + 1, None)
+
+        if veh[veh.index('Gender') + 1] == 'Ethnicity':
+            veh.insert(veh.index('Gender') + 1, None)
+        
+        if veh[veh.index('Ethnicity') + 1] == 'Residence Of':
+            veh.insert(veh.index('Ethnicity') + 1, None)
+        
+    
         if veh[veh.index('Driver License Type') + 1] == 'Vehicle License State ID':
             veh.insert(veh.index('Driver License Type') + 1, None)
         if veh[veh.index('Vehicle License State ID') + 1] == 'VIN':
@@ -149,18 +169,27 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
         if veh[-1] == 'Insured':
             veh.insert(veh.index('Insured') + 1, None)
 
-        
+        driver_age = veh[veh.index('Age') + 1]
+        driver_gender = veh[veh.index('Gender') + 1]
+        driver_ethnicity = veh[veh.index('Ethnicity') + 1]
+        veh[veh.index('Age') + 1]
         damage_area = veh[veh.index('Damage Area') + 1]
         driver_license_type = veh[veh.index('Driver License Type') + 1]
         vehicle_driver_license_state = veh[veh.index('Vehicle License State ID') + 1]
         vin_number = veh[veh.index('VIN') + 1]
         insured = veh[veh.index('Insured') + 1]
         towing_company = veh[-1]
+
+        vin_stuff = get_vin_data(vin_number)
+
         
-        dictionary = {
+        parsed_stuff = {
             'crash_id': crash_id,
             'vehicle_id': f'{crash_id}{vin_number}{vehicle_number}',
             'vehicle_number': vehicle_number,
+            'driver_age': driver_age,
+            'driver_gender':driver_gender,
+            'driver_ethnicity':driver_ethnicity,
             'damage_area': damage_area,
             'driver_license_type':driver_license_type,
             'vehicle_driver_license_state':vehicle_driver_license_state,
@@ -170,6 +199,8 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
             'towing_comnpany':towing_company,
             'at_fault': at_fault
         }
+        dictionary = {**vin_stuff, **parsed_stuff}
+
         list_of_vehicles.append(dictionary)
         vehicle_ids.append(f'{crash_id}{vin_number}{vehicle_number}')
 
@@ -217,6 +248,3 @@ def get_occupant_data(driver, crash_id, vehicle_ids, list_of_occupants):
                     }
                     list_of_occupants.append(dictionary)
             index+=1
-
-
-

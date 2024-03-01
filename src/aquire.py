@@ -14,8 +14,8 @@ from store_to_gcs import store_to_cloud
 
 city = 'san antonio'
 state = 'texas'
-start_date = '2024-02-01'
-end_date = '2024-02-05'
+start_date = '2024-01-22'
+end_date = '2024-01-31'
 
 
 options = webdriver.ChromeOptions()
@@ -58,9 +58,9 @@ list_of_accidents = []
 list_of_occupants = []
 list_of_vehicles = []
 
-for i in range(50):
+for i in links:
         try:
-                accident_data, vehicle_data, occupant_data = get_page_data(links[i], list_of_vehicles, list_of_occupants)
+                accident_data, vehicle_data, occupant_data = get_page_data(i, list_of_vehicles, list_of_occupants)
                 list_of_accidents.append(accident_data)
         except:
                 continue

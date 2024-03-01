@@ -6,8 +6,6 @@ from selenium.webdriver.common.by import By
 import selenium.webdriver.support.ui as ui
 import selenium.webdriver.support.expected_conditions as EC
 import os
-import time
-import datetime
 from get_data import get_accident_data, get_vehicle_data, get_occupant_data
 
 def get_page_data(link, list_of_vehicles, list_of_occupants):

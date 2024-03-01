@@ -28,7 +28,6 @@ def store_to_cloud(file_type,file, state, city, start_date, end_date):
 
 def stitch_data(file_type, file_name, file_stitch):  
     if file_type in file_name:
-        print(file_name)
         blob = bucket.blob(file_name)
         json_string = blob.download_as_string()
         json_data = json.loads(json_string)
@@ -54,7 +53,6 @@ def store_to_bigquery(json_data,table):
 
     # Infer schema from the JSON data
     first_json_object = json_data[0]
-    print(first_json_object)
 
     schema = []
     for key in first_json_object.keys():
