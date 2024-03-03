@@ -26,7 +26,7 @@ def store_to_bq():
       accident_data = []
       vehicle_data = []
       occupant_data = []
-      time_threshold =  (datetime.today() - timedelta(hours=24)).replace(tzinfo=timezone.utc)
+      time_threshold =  (datetime.today() - timedelta(hours=48)).replace(tzinfo=timezone.utc)
       blobs = bucket.list_blobs()
       recent_files = [blob.name for blob in blobs if blob.time_created >= time_threshold]
 

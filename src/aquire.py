@@ -14,8 +14,8 @@ from store_to_gcs import store_to_cloud
 
 city = 'san antonio'
 state = 'texas'
-start_date = '2024-01-22'
-end_date = '2024-01-31'
+start_date = '2023-5-01'
+end_date = '2023-5-14'
 
 
 options = webdriver.ChromeOptions()
