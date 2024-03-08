@@ -27,8 +27,6 @@ def store_to_cloud(file_type,file, state, city, start_date, end_date):
 
     print(f"JSON data has been uploaded to {blob.public_url}")
 
-
-
 def get_unique_city_states(list):
       return reduce(lambda re, x: re+[x] if x not in re else re,list,[])
 
@@ -88,4 +86,4 @@ def store_to_bigquery(json_data,table):
 
         print(f"Loaded {job.output_rows} row(s) into {table_id}")
     except:
-        print(f'Error uploading files related to {ta}')
+        print(f'Error uploading files related to {table_id}')
