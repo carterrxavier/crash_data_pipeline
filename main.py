@@ -47,9 +47,9 @@ def store_to_bq():
                   stitch_data('accidents', file, file_stitch_accidents)
                   stitch_data('occupants', file, file_stitch_occupants)
                   stitch_data('vehicles', file, file_stitch_vehicles)
-            store_to_bigquery(file_stitch_accidents,f'{city_state[0].replace(' ','_')}_{city_state[1].replace(' ','_')}_accidents')
-            store_to_bigquery(file_stitch_occupants,f'{city_state[0].replace(' ','_')}_{city_state[1].replace(' ','_')}_occupants')
-            store_to_bigquery(file_stitch_vehicles,f'{city_state[0].replace(' ','_')}_{city_state[1].replace(' ','_')}_vehicles')
+            store_to_bigquery(file_stitch_accidents,f"{city_state[0].replace(' ','_')}_{city_state[1].replace(' ','_')}_accidents")
+            store_to_bigquery(file_stitch_occupants,f"{city_state[0].replace(' ','_')}_{city_state[1].replace(' ','_')}_occupants")
+            store_to_bigquery(file_stitch_vehicles,f"{city_state[0].replace(' ','_')}_{city_state[1].replace(' ','_')}_vehicles")
 
       return "success",200
 store_to_bq()
