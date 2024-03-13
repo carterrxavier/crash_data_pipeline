@@ -31,7 +31,7 @@ If you're looking to parse new data manually after the local environment has  be
 to specify the city, state end, and start time before running aquire.py
 
 ```
-city = 'ciity of intrest'
+city = 'city of intrest'
 state = 'state of intrest'
 start_date = 'YYYY-MM-DD'
 end_date = 'YYYY-MM-DD'
