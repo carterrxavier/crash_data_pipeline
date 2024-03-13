@@ -45,7 +45,7 @@ def store_to_bq():
       #upload to Bigquery
       for city_state in unique_city_state:
             blobs = bucket.list_blobs()
-            current_files = [blob.name for blob in blobs if city_state[0] in blob.name and city_state[1] in blob.name]
+            current_files = [blob.name for blob in blobs if city_state[0] in blob.name and city_state[1] in blob.name and blob.time_created >= time_threshold]
             file_stitch_accidents = []
             file_stitch_occupants = []
             file_stitch_vehicles = []
