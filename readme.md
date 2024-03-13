@@ -12,8 +12,9 @@ This repository stores the process to extract data from BigQuery and encrypt it 
 ```bash
 |—src # source code for processing
 |—.gitignore # gitignore
+|-.env example 
 |—Dockerfile # Dockerfile for container image definition
-|—main.py # entry point for Flask service with route defintions
+|—main.py # entry point for Flask service with route definitions
 |—requirements.txt # deployment project dependencies
 ```
 
@@ -24,6 +25,10 @@ To setup the project, create a virtual environment through python-venv, [virtual
 ```bash
 > pip install -r requirements.txt
 ```
+
+### Setup local env variables
+
+### uncomment out and set GOOGLE_APPLICATION_CREDENTIALS  to run locally in the store_to_gcs.py file
 
 ## Code Execution
 
