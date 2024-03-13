@@ -12,8 +12,9 @@ This repository stores the process to extract data from BigQuery and encrypt it 
 ```bash
 |—src # source code for processing
 |—.gitignore # gitignore
+|-.env example 
 |—Dockerfile # Dockerfile for container image definition
-|—main.py # entry point for Flask service with route defintions
+|—main.py # entry point for Flask service with route definitions
 |—requirements.txt # deployment project dependencies
 ```
 
@@ -25,15 +26,32 @@ To setup the project, create a virtual environment through python-venv, [virtual
 > pip install -r requirements.txt
 ```
 
+### Setup local env variables
+
+### uncomment out and set GOOGLE_APPLICATION_CREDENTIALS  to run locally in the store_to_gcs.py file
+
 ## Code Execution
 
-If your looking to parse new data manually after local enviroment has  been set up you will run the code
+If you're looking to parse new data manually after the local environment has  been set up you will run the code
+to specify the city, state end, and start time before running aquire.py
+
+```
+city = 'city of intrest'
+state = 'state of intrest'
+start_date = 'YYYY-MM-DD'
+end_date = 'YYYY-MM-DD'
+
+```
+
 ```bash
 > cd src
 > python aquire.py
 ```
 
-To manually run the pythin script to push data into Bigquery, make sure that the virtual environment is activated. Execute the following:
+To manually run the Python script to add any new data to Bigquery, make sure that the virtual environment is activated. Execute the following:
+
+
+
 
 ```bash
 > python run main.py
