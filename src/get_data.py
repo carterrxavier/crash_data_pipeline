@@ -1,6 +1,17 @@
 from selenium.webdriver.common.by import By
 import requests, json
 
+''' 
+This python script is the home of parsing all of the data
+Based on the page layout, accident , occupant and vehicle parsing all have their own unique structure,
+this code tries to account for those structures and tries to solve for any anomalies in consistancy of the page layout
+if there is not a scenerio accounted for the accident will be skipped.
+'''
+
+'''
+This function utilizes an api from the NHTSA,
+taking redacted VIN number in order to aquire missing information about the vehicle that doesnt exist on the web page
+'''
 def get_vin_data(driverVIN):
     if driverVIN != "NOVIN":
         vin_url = 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/'
@@ -10,6 +21,10 @@ def get_vin_data(driverVIN):
         return  r.json()['Results'][0]
     else:
         return {}
+
+'''
+This function will grab data related to the accident as a whole, utilzing the crash_id as the Primary Key
+'''
 
 def get_accident_data(driver): 
     #Unique Identifier for the accident
@@ -67,11 +82,12 @@ def get_accident_data(driver):
     if summary[-1] == 'Accident Location':
         summary.insert(summary.index('Accident Location') + 1, None)
 
+    #create a string of all the accident factors, will parse through later to help indicate cause of accident/ type of accident
     accident_factors = str(summary[summary.index('Accident Contributing Factors') \
                                    + 1:summary.index('Date & Time Of Crash')])\
                                     .replace('[','')\
                                     .replace(']','')
-    
+    #set variables
     accident_date_time = summary[summary.index('Date & Time Of Crash') + 1]
     accident_speed_limit = summary[summary.index('Speed Limit') + 1]
     accident_number_of_injuries = summary[summary.index('Total Number of Injuries') - 1]
@@ -92,6 +108,7 @@ def get_accident_data(driver):
     accident_traffic_conditions = summary_2[summary_2.index('Road & Traffic Conditions') + 1]
     accident_weather =  summary_2[summary_2.index('Weather') + 1]
 
+    #create dictionary
     dictionary = {
             "case_id": case_id,
             "crash_id": crash_id,
@@ -112,6 +129,15 @@ def get_accident_data(driver):
             "accident_weather": accident_weather
             }
     return dictionary , crash_id
+
+'''
+This function will look to parse all data related to the vehicles
+accident -> vehicles is a 1 to many relationship, so vehicles will be created as its own table
+so we will utilize the parsed crash_id from the previous section to be a foreign key of this table 
+and create a primary key utilizing the crash_id vin number and vehicle number
+this way we know which vehicle belongs to which accident
+
+'''
 
 def get_vehicle_data(driver, crash_id, list_of_vehicles):
     vehicles = driver.find_elements(By.CLASS_NAME,'driver-vehicle')
@@ -207,6 +233,15 @@ def get_vehicle_data(driver, crash_id, list_of_vehicles):
         vehicle_number += 1
     
     return vehicle_ids
+
+'''
+This function will look to parse all data related to the occupants
+vehicles-> occupants  is a 1 to many relationship, so occupants will be created as its own table
+so we will utilize the parsed vehicle_id and crash_id from the previous sections to be a foreign keys of this table 
+and create a primary key utilizing the vehicle_id, crash_id  and occupant number to create the primary key for this table
+this way we know which occpant belongs to each vehicle as well as all the occupants within an accident.
+'''
+
 
 def get_occupant_data(driver, crash_id, vehicle_ids, list_of_occupants):
     occupant_body = driver.find_elements(By.CLASS_NAME,'occupant-form-holder')
