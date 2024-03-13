@@ -11,10 +11,17 @@ project_id = os.environ.get('PROJECT_ID')
 bucket_name = os.environ.get('BUCKET_NAME')
 dataset_id = os.environ.get("DATASET_ID")
 
+#local only
 #os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 client = storage.Client(project=project_id)
 bucket = client.get_bucket(bucket_name)
+
+
+
+'''
+This function is used to create the file fath for the file created and store that file into the GCS bucket
+'''
 
 def store_to_cloud(file_type,file, state, city, start_date, end_date):
     filename = f'{state}/{city}/{file_type}/{start_date}__{end_date}.json'
@@ -27,9 +34,12 @@ def store_to_cloud(file_type,file, state, city, start_date, end_date):
 
     print(f"JSON data has been uploaded to {blob.public_url}")
 
+
+#narrow down what was parsed into unique city-states, so all data related to the same city-state and be stitched and parsed together
 def get_unique_city_states(list):
       return reduce(lambda re, x: re+[x] if x not in re else re,list,[])
 
+#stich all files that are the same city state together. this way the cloud run service only has to upload one file
 def stitch_data(file_type, file_name,file_stitch):  
     if file_type in file_name:
         blob = bucket.blob(file_name)
@@ -37,6 +47,11 @@ def stitch_data(file_type, file_name,file_stitch):
         json_data = json.loads(json_string)
         file_stitch += json_data
 
+'''
+This function will take look to take the data parsed and store it into bigquery, organized by city state
+If the table doesnt exist it will create it.
+
+'''
 def store_to_bigquery(json_data,table):
 
     # Replace these variables with your actual values
