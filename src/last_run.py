@@ -2,6 +2,11 @@ from google.cloud import pubsub_v1
 from datetime import datetime, timedelta
 import os
 
+'''
+function utilized to  check to see the last time a pub sub was triggered, a wip to
+replace the hardcoded 24 hour window on main.py
+'''
+
 
 def get_last_message_timestamp(project_id, subscription_name):
     # Initialize Pub/Sub client
