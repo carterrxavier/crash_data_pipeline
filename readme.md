@@ -27,13 +27,25 @@ To setup the project, create a virtual environment through python-venv, [virtual
 
 ## Code Execution
 
-If your looking to parse new data manually after local enviroment has  been set up you will run the code
+If you're looking to parse new data manually after local environment has  been set up you will run the code
+EW
+
 ```bash
 > cd src
 > python aquire.py
 ```
 
-To manually run the python script to add any new data to Bigquery, make sure that the virtual environment is activated. Execute the following:
+To manually run the Python script to add any new data to Bigquery, make sure that the virtual environment is activated. Execute the following:
+
+specify the city, state end, and start time before running aquire.py
+
+```
+city = 'san antonio'
+state = 'texas'
+start_date = '2023-5-01'
+end_date = '2023-5-14'
+
+```
 
 ```bash
 > python run main.py
