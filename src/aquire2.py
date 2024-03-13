@@ -8,6 +8,12 @@ import selenium.webdriver.support.expected_conditions as EC
 import os
 from get_data import get_accident_data, get_vehicle_data, get_occupant_data
 
+'''
+This script is used to parse accident, vehicle and occupant data from each page
+Skip any pages that may cause problems to that are not accounted for in the get_data.py file
+'''
+
+
 def get_page_data(link, list_of_vehicles, list_of_occupants):
     
     options = webdriver.ChromeOptions()
@@ -25,7 +31,9 @@ def get_page_data(link, list_of_vehicles, list_of_occupants):
         ui.WebDriverWait(driver, 15).until(EC.visibility_of_all_elements_located((By.ID, 'ACCIDENT')))
         #get accident summary data
         accident_data, crash_id = get_accident_data(driver)
+        #get data related to vehicles
         vehicle_ids = get_vehicle_data(driver, crash_id, list_of_vehicles)
+        #get data related to occupants
         get_occupant_data(driver, crash_id, vehicle_ids, list_of_occupants)
                 
     except TimeoutException as ex:
