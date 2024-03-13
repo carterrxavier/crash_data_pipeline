@@ -33,7 +33,7 @@ If your looking to parse new data manually after local enviroment has  been set 
 > python aquire.py
 ```
 
-To manually run the pythin script to push data into Bigquery, make sure that the virtual environment is activated. Execute the following:
+To manually run the python script to add any new data to Bigquery, make sure that the virtual environment is activated. Execute the following:
 
 ```bash
 > python run main.py
