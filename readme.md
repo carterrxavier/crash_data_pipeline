@@ -1,6 +1,6 @@
 # Crash Data Pipeline
 
-#- [Looker Studio Dashboard](https://lookerstudio.google.com/u/0/reporting/815485bf-6a14-4b7a-a88b-0c7bee38ae7a/page/PmVsD)
+# - [Looker Studio Dashboard](https://lookerstudio.google.com/u/0/reporting/815485bf-6a14-4b7a-a88b-0c7bee38ae7a/page/PmVsD)
 
 This repository stores the process to extract data from BigQuery and encrypt it into a GCS storage bucket. It has the optional capability to also encrypt said file data with PGP encryption. It is integrated with GCP BigQuery & Cloud Storage to write data to a given bucket and hosted on GCP Cloud Run as multiple routes on a Flask application.
 
